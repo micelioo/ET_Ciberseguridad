@@ -4,8 +4,8 @@ pipeline {
     environment {
         PROJECT_NAME = "securedev-vulnerable"
         SONARQUBE_URL = "http://sonarqube:9000"
-        SONARQUBE_TOKEN = "sqa_8b3bc3d9dadd0e6b3221285d9e3481748a799219"
-        TARGET_URL = "http://172.23.41.49:5000"
+        SONARQUBE_TOKEN = "sqa_cf4fcb6d4bdf1ae2fbb0fb89f36d394810bc3673"
+        TARGET_URL = "http://172.18.212.228:5000"
     }
 
     stages {
