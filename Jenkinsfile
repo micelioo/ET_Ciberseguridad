@@ -4,7 +4,7 @@ pipeline {
     environment {
         PROJECT_NAME   = "securedev-vulnerable"
         SONARQUBE_URL  = "http://sonarqube:9000"
-        SONARQUBE_TOKEN = sqa_cf4fcb6d4bdf1ae2fbb0fb89f36d394810bc3673
+        SONARQUBE_TOKEN = "sqa_cf4fcb6d4bdf1ae2fbb0fb89f36d394810bc3673"
         TARGET_URL     = "http://172.18.212.228:5000"
     }
 
