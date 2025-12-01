@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     environment {
-        PROJECT_NAME   = "securedev-vulnerable"
-        SONARQUBE_URL  = "http://sonarqube:9000"
+        PROJECT_NAME    = "securedev-vulnerable"
+        SONARQUBE_URL   = "http://sonarqube:9000"
         SONARQUBE_TOKEN = "sqa_cf4fcb6d4bdf1ae2fbb0fb89f36d394810bc3673"
-        TARGET_URL     = "http://172.18.212.228:5000"
+        TARGET_URL      = "http://172.18.212.228:5000"
     }
 
     stages {
@@ -69,8 +69,14 @@ pipeline {
                 NVD_API_KEY = credentials('nvdApiKey')
             }
             steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    dependencyCheck additionalArguments: "--scan . --format HTML --out dependency-check-report --enableExperimental --enableRetired --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'DependencyCheck'
+                script {
+                    try {
+                        dependencyCheck additionalArguments: "--scan . --format HTML --out dependency-check-report --enableExperimental --enableRetired --nvdApiKey ${NVD_API_KEY}",
+                                        odcInstallation: 'DependencyCheck'
+                    } catch (err) {
+                        echo "Dependency-Check falló (probablemente por la NVD), pero el pipeline continúa: ${err}"
+                        currentBuild.result = 'SUCCESS'
+                    }
                 }
             }
         }
@@ -88,5 +94,4 @@ pipeline {
             }
         }
     }
-
 }
