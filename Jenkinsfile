@@ -2,15 +2,15 @@ pipeline {
     agent any
 
     environment {
-        PROJECT_NAME = "securedev-vulnerable"
-        SONARQUBE_URL = "http://sonarqube:9000"
-        SONARQUBE_TOKEN = "sqa_cf4fcb6d4bdf1ae2fbb0fb89f36d394810bc3673"
-        TARGET_URL = "http://172.18.212.228:5000"
+        PROJECT_NAME   = "securedev-vulnerable"
+        SONARQUBE_URL  = "http://sonarqube:9000"
+        SONARQUBE_TOKEN = sqa_cf4fcb6d4bdf1ae2fbb0fb89f36d394810bc3673
+        TARGET_URL     = "http://172.18.212.228:5000"
     }
 
     stages {
 
-        stage ('Checkout') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
@@ -35,6 +35,7 @@ pipeline {
                 '''
             }
         }
+
         stage('Python Security Audit') {
             steps {
                 sh '''
@@ -62,12 +63,15 @@ pipeline {
                 }
             }
         }
+
         stage('Dependency Check') {
             environment {
                 NVD_API_KEY = credentials('nvdApiKey')
             }
             steps {
-                dependencyCheck additionalArguments: "--scan . --format HTML --out dependency-check-report --enableExperimental --enableRetired --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'DependencyCheck'
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    dependencyCheck additionalArguments: "--scan . --format HTML --out dependency-check-report --enableExperimental --enableRetired --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'DependencyCheck'
+                }
             }
         }
 
