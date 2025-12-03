@@ -2,15 +2,15 @@ pipeline {
     agent any
 
     environment {
-        PROJECT_NAME = "securedev-vulnerable"
-        SONARQUBE_URL = "http://sonarqube:9000"
+        PROJECT_NAME   = "securedev-vulnerable"
+        SONARQUBE_URL  = "http://sonarqube:9000"
         SONARQUBE_TOKEN = "sqa_cf4fcb6d4bdf1ae2fbb0fb89f36d394810bc3673"
-        TARGET_URL = "http://172.18.212.228:5000"
+        TARGET_URL     = "http://172.18.212.228:5000"
     }
 
     stages {
 
-        stage ('Checkout') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
@@ -35,6 +35,7 @@ pipeline {
                 '''
             }
         }
+
         stage('Python Security Audit') {
             steps {
                 sh '''
@@ -53,22 +54,36 @@ pipeline {
                     withSonarQubeEnv('SonarQubeScanner') {
                         sh """
                             ${scannerHome}/bin/sonar-scanner \
-                                -Dsonar.projectKey=$PROJECT_NAME \
+                                -Dsonar.projectKey=${PROJECT_NAME} \
                                 -Dsonar.sources=. \
-                                -Dsonar.host.url=$SONARQUBE_URL \
-                                -Dsonar.login=$SONARQUBE_TOKEN
+                                -Dsonar.host.url=${SONARQUBE_URL} \
+                                -Dsonar.login=${SONARQUBE_TOKEN}
                         """
                     }
                 }
             }
         }
+
         stage('Dependency Check') {
-            environment {
-                NVD_API_KEY = credentials('nvdApiKey')
-            }
             steps {
+<<<<<<< HEAD
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     dependencyCheck additionalArguments: "--scan . --format HTML --out dependency-check-report --enableExperimental --enableRetired --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'DependencyCheck'
+=======
+                script {
+                    def dcHome = tool name: 'DependencyCheck', type: 'org.jenkinsci.plugins.DependencyCheck.tools.DependencyCheckInstallation'
+
+                    withCredentials([string(credentialsId: 'nvdApiKey', variable: 'NVD_API_KEY')]) {
+                        sh """
+                            mkdir -p dependency-check-report
+                            ${dcHome}/bin/dependency-check.sh \
+                                --scan . \
+                                --format HTML \
+                                --out dependency-check-report \
+                                --nvdApiKey ${NVD_API_KEY} || true
+                        """
+                    }
+>>>>>>> 050a9c6d723f5e8f8caee172c3e17c9a3c47f009
                 }
             }
 }
@@ -87,5 +102,4 @@ pipeline {
             }
         }
     }
-
 }
