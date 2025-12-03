@@ -88,7 +88,6 @@ pipeline {
             }
 }
 
-
         stage('Publish Reports') {
             steps {
                 publishHTML([

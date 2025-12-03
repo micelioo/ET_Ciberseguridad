@@ -11,16 +11,13 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True  #cookie no es accesible desde JS
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  #reduce riesgo de CSRF básico
 app.config['SESSION_COOKIE_SECURE'] = True
 
-
 def get_db_connection():
     conn = sqlite3.connect('example.db')
     conn.row_factory = sqlite3.Row
     return conn
 
-
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
-
 
 # CSRF
 def generate_csrf_token():
@@ -28,18 +25,15 @@ def generate_csrf_token():
         session['csrf_token'] = secrets.token_hex(16)
     return session['csrf_token']
 
-
 def validate_csrf():
     form_token = request.form.get('csrf_token')
     session_token = session.get('csrf_token')
     if not form_token or not session_token or form_token != session_token:
         abort(400, description="Token CSRF inválido")
 
-
 @app.context_processor
 def inject_csrf_token():
     return dict(csrf_token=generate_csrf_token())
-
 
 #rutas
 @app.route('/')
